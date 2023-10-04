@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Chat en ligne</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <div id="chat">
+      <div id="messages">
+        <!-- Les messages seront affichés ici -->
+      </div>
+      <form id="formulaire">
+        <input type="text" id="message" placeholder="Entrez votre message ici">
+        <button type="submit">Envoyer</button>
+      </form>
+    </div>
+
+    <script>
+      const socket = new WebSocket('ws://localhost:9999'); // On se connecte au server distant avec IP/PORT : localhost/9999 et sur le protocole de discussion ws (websocket)
+
+      socket.onopen = function() {
+          console.log('Connecté au serveur WebSocket'); // confirmation de connexion
+      };
+
+      socket.onmessage = function(event) {
+          const message = document.createElement('div'); // on créé le receptacle du message
+          message.textContent = event.data; // On ajoute à la div un contenu qui sera le message en lui même
+          console.log("message : %s", event.data);
+          document.getElementById('messages').appendChild(message); // On ajoute au conteneur d'id message la balise div contenant le message.
+      };
+
+      // le code après vide l'input qui permet de saisir le message, c'est le signe que le bouton submit a été appuyé et aussi que le message va être envoyé.
+      document.getElementById('formulaire').addEventListener('submit', 
+      function(event) {
+        event.preventDefault();
+        const message = document.getElementById('message').value;
+        socket.send(message);
+        document.getElementById('message').value = '';
+      });
+    </script>
+  </body>
+</html>
